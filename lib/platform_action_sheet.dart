@@ -71,10 +71,9 @@ void _settingModalBottomSheet(context, List<ActionSheetAction> actions) {
                 shrinkWrap: true,
                 itemCount: actions.length,
                 itemBuilder: (bc, index) => listTileFromAction(actions[index]),
-                separatorBuilder: (bc, index) =>
-                index >= (actions.length - 2)
-                    ? Divider()
-                    : Container()), // Display a separator only above the last option
+                separatorBuilder: (bc, index) => (index==(actions.length-2) &&
+                    actions[actions.length-1].isCancel)
+                    ? Divider() : Container()), // Display a separator only above the last option
           );
         });
   }
@@ -83,7 +82,7 @@ void _settingModalBottomSheet(context, List<ActionSheetAction> actions) {
 // this class describes an action for either a CupertinoActionSheet or a Bottom Sheet depending on the platform
 class ActionSheetAction {
   final String text;
-  final Function onPressed;
+  final VoidCallback onPressed;
   final bool defaultAction;
   final bool isCancel;
   final bool hasArrow; // on Android indicates that further options are next

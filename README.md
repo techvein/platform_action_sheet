@@ -14,7 +14,7 @@ In the pubspec.yaml of your flutter project, add the following dependency:
 ```dart
 dependencies:
   ...
-  platform_action_sheet: ^0.0.1
+  platform_action_sheet: ^0.0.2
 ```
 In your library add the following import:
 ```dart
@@ -23,7 +23,7 @@ import 'package:platform_action_sheet/platform_action_sheet.dart';
 For help getting started with Flutter, view the [online documentation](https://flutter.io/).
 
 ## Example
-![](art/ios.png)![](art/android.png)
+![](https://github.com/Amazing-Aidan/platform_action_sheet/blob/master/art/ios.png?raw=true)![](https://github.com/Amazing-Aidan/platform_action_sheet/blob/master/art/android.png?raw=true)
 
 
 ```dart
