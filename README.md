@@ -14,7 +14,7 @@ In the pubspec.yaml of your flutter project, add the following dependency:
 ```dart
 dependencies:
   ...
-  platform_action_sheet: ^0.0.2
+  platform_action_sheet: ^0.0.3
 ```
 In your library add the following import:
 ```dart
@@ -55,31 +55,42 @@ class Home extends StatelessWidget {
       ),
       body: Center(
         child: FlatButton(
-          color: Colors.blue,
-          onPressed: () => PlatformActionSheet().displaySheet(
-          context, 
-          [
-            ActionSheetAction(
-              text: "Option 1",
-              onPressed: () => Navigator.pop(context),
-              hasArrow: true,
-            ),
-            ActionSheetAction(
-              text: "Option 2",
-              onPressed: () => Navigator.pop(context),
-            ),
-            ActionSheetAction(
-              text: "Cancel",
-              onPressed: () => Navigator.pop(context),
-              isCancel: true,
-              defaultAction: true,
-            )
-          ]),
-          child: Text(
-            'Display ActionSheet',
-            textScaleFactor: 1.2,
-            style: TextStyle(color: Colors.white),
-          ),
+              color: Colors.blue,
+              onPressed: () => PlatformActionSheet().displaySheet(
+                  context: context,
+                  title: Row(
+                    children: <Widget>[
+                      Text("Hello Mum"),
+                      Icon(
+                        Icons.beach_access,
+                        color: Colors.blue,
+                        size: 36.0,
+                      ),
+                    ],
+                  ),
+                  message: Text("I'm in London"),
+                  actions: [
+                    ActionSheetAction(
+                      text: "Option 1",
+                      onPressed: () => Navigator.pop(context),
+                      hasArrow: true,
+                    ),
+                    ActionSheetAction(
+                      text: "Option 2",
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    ActionSheetAction(
+                      text: "Cancel",
+                      onPressed: () => Navigator.pop(context),
+                      isCancel: true,
+                      defaultAction: true,
+                    )
+                  ]),
+              child: Text(
+                'Display ActionSheet',
+                textScaleFactor: 1.2,
+                style: TextStyle(color: Colors.white),
+              ),
         ),
       ),
     );

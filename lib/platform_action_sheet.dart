@@ -8,85 +8,126 @@ import 'package:flutter/widgets.dart';
 
 /// Display a platform dependent Action Sheet
 class PlatformActionSheet {
-  // display sheet
-  displaySheet(BuildContext context, List<ActionSheetAction> actions) {
+  /// Function to display the sheet
+  void displaySheet(
+      {@required BuildContext context,
+      Widget title,
+      Widget message,
+      @required List<ActionSheetAction> actions}) {
     if (Platform.isIOS) {
-      _showCupertinoActionSheet(context, actions);
+      _showCupertinoActionSheet(context, title, message, actions);
     } else {
-      _settingModalBottomSheet(context, actions);
+      _settingModalBottomSheet(context, title, message, actions);
     }
   }
 }
 
-void _showCupertinoActionSheet(BuildContext context,
-    List<ActionSheetAction> actions) {
-  var indexOfCancel = actions.lastIndexWhere((action) =>
-  action
-      .isCancel); // Cancel action is treated differently with CupertinoActionSheets
-  var actionSheet = CupertinoActionSheet(
-      actions: List.from(actions.where((action) => !action.isCancel)).map((cAction) => cupertinoActionSheetActionFromAction(cAction)).toList(),
-      cancelButton: indexOfCancel > 0
-          ? cupertinoActionSheetActionFromAction(actions[indexOfCancel])
-          : Container());
-  showCupertinoModalPopup(
-      context: context, builder: (BuildContext context) => actionSheet);
+void _showCupertinoActionSheet(
+    BuildContext context, title, message, List<ActionSheetAction> actions) {
+  final noCancelOption = -1;
+  // Cancel action is treated differently with CupertinoActionSheets
+  var indexOfCancel = actions.lastIndexWhere((action) => action.isCancel);
+  CupertinoActionSheet actionSheet;
+  actionSheet = indexOfCancel == noCancelOption
+      ? CupertinoActionSheet(
+          title: title,
+          message: message,
+          actions: actions
+              .where((action) => !action.isCancel)
+              .map<Widget>(_cupertinoActionSheetActionFromAction)
+              .toList())
+      : CupertinoActionSheet(
+          title: title,
+          message: message,
+          actions: actions
+              .where((action) => !action.isCancel)
+              .map<Widget>(_cupertinoActionSheetActionFromAction)
+              .toList(),
+          cancelButton:
+              _cupertinoActionSheetActionFromAction(actions[indexOfCancel]));
+  showCupertinoModalPopup(context: context, builder: (_) => actionSheet);
 }
 
-CupertinoActionSheetAction cupertinoActionSheetActionFromAction(
-    ActionSheetAction action) =>
+CupertinoActionSheetAction _cupertinoActionSheetActionFromAction(
+        ActionSheetAction action) =>
     CupertinoActionSheetAction(
       child: Text(action.text),
       onPressed: action.onPressed,
       isDefaultAction: action.defaultAction,
     );
 
-ListTile listTileFromAction(ActionSheetAction action) {
-  if (action.hasArrow) {
-    return ListTile(
-      title: Text(action.text),
-      onTap: action.onPressed,
-      trailing: Icon(Icons.keyboard_arrow_right),
-    );
-  } else {
-    return ListTile(
-      title: Text(
-        action.text,
-        style: TextStyle(
-            fontWeight:
-            action.defaultAction ? FontWeight.bold : FontWeight.normal),
-      ),
-      onTap: action.onPressed,
-    );
-  }
-}
+ListTile _listTileFromAction(ActionSheetAction action) => action.hasArrow
+    ? ListTile(
+        title: Text(action.text),
+        onTap: action.onPressed,
+        trailing: Icon(Icons.keyboard_arrow_right),
+      )
+    : ListTile(
+        title: Text(
+          action.text,
+          style: TextStyle(
+              fontWeight:
+                  action.defaultAction ? FontWeight.bold : FontWeight.normal),
+        ),
+        onTap: action.onPressed,
+      );
 
-void _settingModalBottomSheet(context, List<ActionSheetAction> actions) {
-  if (actions?.isNotEmpty ?? false) {
+void _settingModalBottomSheet(
+    context, title, message, List<ActionSheetAction> actions) {
+  if (actions.isNotEmpty) {
     showModalBottomSheet(
         context: context,
-        builder: (BuildContext bc) {
+        builder: (_) {
+          final _lastItem = 1, _secondLastItem = 2;
           return Container(
-            child: ListView.separated(
-                padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                shrinkWrap: true,
-                itemCount: actions.length,
-                itemBuilder: (bc, index) => listTileFromAction(actions[index]),
-                separatorBuilder: (bc, index) => (index==(actions.length-2) &&
-                    actions[actions.length-1].isCancel)
-                    ? Divider() : Container()), // Display a separator only above the last option
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: title,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: message,
+                ),
+                ListView.separated(
+                    padding: const EdgeInsets.only(left: 20),
+                    shrinkWrap: true,
+                    itemCount: actions.length,
+                    itemBuilder: (_, index) =>
+                        _listTileFromAction(actions[index]),
+                    separatorBuilder: (_, index) =>
+                        (index == (actions.length - _secondLastItem) &&
+                                actions[actions.length - _lastItem].isCancel)
+                            ? Divider()
+                            : Container()),
+              ],
+            ), // Separator above the last option only
           );
         });
   }
 }
 
-// this class describes an action for either a CupertinoActionSheet or a Bottom Sheet depending on the platform
+/// Data class for Actions in ActionSheet
 class ActionSheetAction {
+  /// Text to display
   final String text;
-  final VoidCallback onPressed;
-  final bool defaultAction;
-  final bool isCancel;
-  final bool hasArrow; // on Android indicates that further options are next
 
+  /// The function which will be called when the action is pressed
+  final VoidCallback onPressed;
+
+  /// Is this a default action - especially for iOS
+  final bool defaultAction;
+
+  /// This is a cancel option - especially for iOS
+  final bool isCancel;
+
+  /// on Android indicates that further options are next
+  final bool hasArrow;
+
+  /// Construction of an ActionSheetAction
   ActionSheetAction({
     @required this.text,
     @required this.onPressed,
