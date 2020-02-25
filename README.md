@@ -1,5 +1,9 @@
 # Platform action sheet
 
+[![Platform](https://img.shields.io/badge/Platform-Flutter-brightgreen)](https://flutter.dev/)
+[![Pub](https://img.shields.io/badge/Pub-V0.0.3-blue)](https://pub.dev/packages/platform_action_sheet)
+
+
 This package is a simple platform specific actionSheet for Cupertino and Android with the following options:
 - Text - *(Required)* String to display
 - onPressed - *(Required)* Function to be executed on the option item being pressed
