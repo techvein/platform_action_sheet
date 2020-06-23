@@ -27,39 +27,39 @@ void _showCupertinoActionSheet(
   final noCancelOption = -1;
   // Cancel action is treated differently with CupertinoActionSheets
   var indexOfCancel = actions.lastIndexWhere((action) => action.isCancel);
-  CupertinoActionSheet actionSheet;
-  actionSheet = indexOfCancel == noCancelOption
-      ? CupertinoActionSheet(
-          title: title,
-          message: message,
-          actions: actions
-              .where((action) => !action.isCancel)
-              .map<Widget>(_cupertinoActionSheetActionFromAction)
-              .toList())
-      : CupertinoActionSheet(
-          title: title,
-          message: message,
-          actions: actions
-              .where((action) => !action.isCancel)
-              .map<Widget>(_cupertinoActionSheetActionFromAction)
-              .toList(),
-          cancelButton:
-              _cupertinoActionSheetActionFromAction(actions[indexOfCancel]));
-  showCupertinoModalPopup(context: context, builder: (_) => actionSheet);
+  showCupertinoModalPopup(context: context, builder: (context) {
+    return indexOfCancel == noCancelOption
+        ? CupertinoActionSheet(
+        title: title,
+        message: message,
+        actions: actions
+            .where((action) => !action.isCancel)
+            .map<Widget>((action) => _cupertinoActionSheetActionFromAction(context, action))
+            .toList())
+        : CupertinoActionSheet(
+        title: title,
+        message: message,
+        actions: actions
+            .where((action) => !action.isCancel)
+            .map<Widget>((action) => _cupertinoActionSheetActionFromAction(context, action))
+            .toList(),
+        cancelButton:
+        _cupertinoActionSheetActionFromAction(context, actions[indexOfCancel]));
+  });
 }
 
 CupertinoActionSheetAction _cupertinoActionSheetActionFromAction(
-        ActionSheetAction action) =>
+        BuildContext context, ActionSheetAction action) =>
     CupertinoActionSheetAction(
       child: Text(action.text),
-      onPressed: action.onPressed,
+      onPressed: () => action.onPressed(context),
       isDefaultAction: action.defaultAction,
     );
 
-ListTile _listTileFromAction(ActionSheetAction action) => action.hasArrow
+ListTile _listTileFromAction(BuildContext context, ActionSheetAction action) => action.hasArrow
     ? ListTile(
         title: Text(action.text),
-        onTap: action.onPressed,
+        onTap: () => action.onPressed(context),
         trailing: Icon(Icons.keyboard_arrow_right),
       )
     : ListTile(
@@ -69,7 +69,7 @@ ListTile _listTileFromAction(ActionSheetAction action) => action.hasArrow
               fontWeight:
                   action.defaultAction ? FontWeight.bold : FontWeight.normal),
         ),
-        onTap: action.onPressed,
+        onTap: () => action.onPressed(context),
       );
 
 void _settingModalBottomSheet(
@@ -77,7 +77,7 @@ void _settingModalBottomSheet(
   if (actions.isNotEmpty) {
     showModalBottomSheet(
         context: context,
-        builder: (_) {
+        builder: (context) {
           final _lastItem = 1, _secondLastItem = 2;
           return Container(
             child: Column(
@@ -97,7 +97,7 @@ void _settingModalBottomSheet(
                     shrinkWrap: true,
                     itemCount: actions.length,
                     itemBuilder: (_, index) =>
-                        _listTileFromAction(actions[index]),
+                        _listTileFromAction(context, actions[index]),
                     separatorBuilder: (_, index) =>
                         (index == (actions.length - _secondLastItem) &&
                                 actions[actions.length - _lastItem].isCancel)
@@ -116,7 +116,7 @@ class ActionSheetAction {
   final String text;
 
   /// The function which will be called when the action is pressed
-  final VoidCallback onPressed;
+  final void Function(BuildContext) onPressed;
 
   /// Is this a default action - especially for iOS
   final bool defaultAction;
@@ -136,3 +136,4 @@ class ActionSheetAction {
     this.hasArrow = false,
   });
 }
+
